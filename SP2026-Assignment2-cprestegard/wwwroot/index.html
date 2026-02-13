@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@microsoft/azsearch.js@0.0.21/dist/AzSearch.css" integrity="sha384-A4GRwkHIqaePcrwhXmW+Ie/Q1cPwV20Ma4G/dCn6CgIk91An1IAnpZ/RXRnTFHPB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha384-VK/ia2DWrvtO05YDcbWI8WE3WciOH0RhfPNuRJGSa3dpAs5szXWQuCnPNv/yzpO4" crossorigin="anonymous">
+    <title>Cade's RealEstateSearch</title>
+    <style>
+        html, body { height: 100%; margin: 0; }
+        body {
+            font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background: #f5f6f8;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-width: 320px;
+            overflow-x: auto;
+        }
+        #app {
+            min-width: 320px;
+            width: 100%;
+        }
+        .navbar {
+            border-radius: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-height: 56px;
+        }
+        .navbar-container {
+            padding-left: 20px;
+            padding-right: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .navbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            min-height: 56px;
+            gap: 16px;
+        }
+        .navbar-left {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            min-width: 0;
+        }
+        .navbar-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            max-width: 480px;
+        }
+        .navbar-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 0;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .navbar-center #searchBox {
+            width: 100%;
+        }
+        .navbar-center #searchBox input {
+            width: 100%;
+            max-width: 100%;
+        }
+        .navbar-row {
+            display: flex;
+            align-items: center;
+            margin-left: 0;
+            margin-right: 0;
+            flex-wrap: nowrap;
+        }
+        .navbar-row .pagelabel,
+        .navbar-row .search-box-col,
+        .navbar-row .navbar-buttons {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-row .navbar-buttons {
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .navbar-inverse,
+        .navbar.navbar-inverse {
+            background: #2563eb !important;
+            background-color: #2563eb !important;
+            border-color: #1d4ed8 !important;
+        }
+        .navbar-inverse .navbar-toggle {
+            border-color: rgba(255,255,255,0.4);
+        }
+        .navbar-inverse .navbar-toggle .icon-bar {
+            background-color: #fff;
+        }
+        .navbar-inverse .navbar-toggle:hover,
+        .navbar-inverse .navbar-toggle:focus {
+            background-color: #1d4ed8;
+        }
+        .navbar-brand.pagelabel {
+            font-weight: 700;
+            font-size: 1.35em;
+            letter-spacing: 0.02em;
+            color: #fff !important;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .navbar-brand.pagelabel:hover {
+            color: #e0e0e0 !important;
+        }
+        .main-content-wrap {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .results_section {
+            padding-top: 28px;
+            padding-bottom: 56px;
+            padding-right: 24px;
+            min-width: 0;
+            min-height: 400px;
+        }
+        .results_section .row.placeholders {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -10px;
+            margin-right: -10px;
+        }
+        .searchResults__result {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            overflow: hidden;
+            border: 1px solid #e8eaed;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            min-height: 180px;
+        }
+        .searchResults__result h4 {
+            margin-top: 0;
+            text-transform: uppercase;
+            font-size: 1.05em;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .searchResults__result .resultDescription {
+            margin: 0.5em 0 0 0;
+            color: #555;
+            line-height: 1.55;
+            font-size: 0.95em;
+        }
+        .result_img img {
+            width: 100%;
+            height: 180px;
+            min-height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        #facetPanel {
+            padding-top: 20px;
+            padding-bottom: 20px;
+            padding-left: 14px;
+            padding-right: 14px;
+            min-width: 180px;
+            width: 200px;
+            background-image: url("https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800");
+            background-size: cover;
+            background-position: center;
+            position: fixed;
+            right: 0;
+            top: 56px;
+            bottom: 0;
+            max-height: none;
+            overflow-y: auto;
+            border-left: 1px solid rgba(0,0,0,0.06);
+            box-shadow: -2px 0 20px rgba(0,0,0,0.06);
+            z-index: 100;
+        }
+        #facetPanel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(250,251,252,0.96);
+            z-index: 0;
+        }
+        #facetPanel .nav,
+        #facetPanel #clearFilters,
+        #facetPanel > * {
+            position: relative;
+            z-index: 1;
+        }
+        #facetPanel .nav-sidebar li {
+            margin-bottom: 6px;
+        }
+        #facetPanel .nav-sidebar,
+        #facetPanel #clearFilters,
+        #facetPanel .behclick-panel { font-size: 0.9em; }
+        #pager {
+            margin-top: 28px;
+        }
+        .navbar-btn {
+            border-color: rgba(255,255,255,0.5);
+            color: #fff !important;
+            background: rgba(255,255,255,0.15);
+            white-space: nowrap;
+        }
+        .navbar-btn:hover {
+            background: rgba(255,255,255,0.25);
+            color: #fff !important;
+            border-color: rgba(255,255,255,0.6);
+        }
+        .ui-dialog #time { font-size: 1.5em; text-align: center; padding: 1em 1.5em; min-width: 120px; }
+        @media (min-width: 992px) {
+            .main-content-wrap .row { align-items: flex-start; }
+            .main-content-wrap { padding-right: 200px; }
+            .col-md-3.sidebar { width: 0; flex: 0 0 0; padding: 0; overflow: visible; }
+            .col-md-9.results_section { width: 100%; flex: 1; min-width: 0; }
+            #facetPanel.collapse { display: block !important; }
+        }
+        @media (max-width: 991px) {
+            .main-content-wrap { padding-right: 0; }
+            .col-sm-9.col-md-9.results_section { width: 100%; margin-left: 0; padding-right: 15px; }
+            #facetPanel {
+                position: relative;
+                right: auto;
+                top: auto;
+                bottom: auto;
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid rgba(0,0,0,0.08);
+                box-shadow: none;
+                z-index: auto;
+            }
+        }
+        @media (max-width: 767px) {
+            .navbar-inner { flex-wrap: wrap; gap: 10px; padding: 8px 0; }
+            .navbar-left { flex: 0 0 auto; }
+            .navbar-center { flex: 1 1 100%; order: 3; max-width: none; }
+            .navbar-right { flex: 0 0 auto; justify-content: flex-end; }
+            .main-content-wrap { padding-left: 15px; padding-right: 15px; }
+            .searchResults__result { flex-direction: column; }
+            .result_img img { min-height: 160px; height: 160px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid navbar-container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#facetPanel" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="navbar-inner">
+                        <div class="navbar-left">
+                            <a class="navbar-brand pagelabel" href="#" id="brandLink">Cade's RealEstateSearch</a>
+                        </div>
+                        <div class="navbar-center">
+                            <div id="searchBox"></div>
+                        </div>
+                        <div class="navbar-right">
+                            <button type="button" class="btn btn-default btn-sm navbar-btn" id="currentTimeBtn">Current time</button>
+                            <button type="button" class="btn btn-default btn-sm navbar-btn" id="feelingLuckyBtn">I'm feeling lucky</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid main-content-wrap">
+            <div class="row">
+                <div class="col-sm-9 col-md-9 results_section">
+                    <div id="results" class="row placeholders">
+                    </div>
+                    <div id="pager" class="row">
+                    </div>
+                </div>
+                <div id="facetPanel" class="col-sm-3 col-md-3 sidebar collapse">
+                    <div id="clearFilters"></div>
+                    <ul class="nav nav-sidebar">
+                        <div class="panel panel-primary behclick-panel">
+                            <li>
+                                <div id="PriceFacet">
+                                </div>
+                            </li>
+                            <li>
+                                <div id="BedsFacet">
+                                </div>
+                            </li>
+                            <li>
+                                <div id="BathFacet">
+                                </div>
+                            </li>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Time display: empty div, content loaded and shown as jQuery UI dialog when button is clicked -->
+        <div id="time"></div>
+        <!-- Bootstrap core JavaScript
+            ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" integrity="sha384-PtTRqvDhycIBU6x1wwIqnbDo8adeWIWP3AHmnrvccafo35E7oIvW7HPXn2YimvWu" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+<!-- Dependencies -->
+<script src="https://cdn.jsdelivr.net/react/15.5.0/react.min.js" integrity="sha384-unua6Gv4M/M70BdLhkLiN8hgAL+jKt8Iiy6SFD9S0ywoRy+5zHVBuztpyEn0tAus" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/react/15.5.0/react-dom.min.js" integrity="sha384-mcKbn9HhTY6F3IhItyNmc8stlOpwMfyzy66GsAGSsjMpjAjvEWuE/bwDiMTR9P8f" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/redux/3.6.0/redux.min.js" integrity="sha384-vG6fds20q0bT+1dDKZMlWnQZM1Aic6HaVjyELCdGUDBZQpiKM3Zfm+R6DTUfUlB/" crossorigin="anonymous"></script>
+<!-- Main -->
+<script src="https://cdn.jsdelivr.net/npm/@microsoft/azsearch.js@0.0.21/dist/AzSearch.bundle.js" integrity="sha384-L81tXpv1V/sogv+CuyItOpknRBiTHFDZlI/XQw1RY23xGj7bq64cD9B+U1HU5Dp2" crossorigin="anonymous"></script>
+<script>
+    // WARNING
+    // CORS (*) must be enabled in the index before using the demo app. API key authentication must be enabled in the search service.
+
+    const serviceName = "cpsp26521";
+    const dnsSuffix = "search.windows.net";
+    const indexName = "search-1770951958595";
+    const apiKey = "YOUR_QUERY_API_KEY"; // Replace with your Azure AI Search query key from portal
+
+ // Initialize and connect to your search service
+    var automagic = new AzSearch.Automagic({ index:indexName, queryKey:apiKey, service:serviceName, dnsSuffix:dnsSuffix });
+
+    const money = new Intl.NumberFormat("en-US", {
+      style: "currency",
+          currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+
+    automagic.store.setResultsProcessor((results) => {
+      return results.map(r => {
+        const n = Number(r.Price);
+
+        // Handle null/NaN safely
+        r.priceMoney = Number.isFinite(n) ? money.format(n) : "";
+
+        return r;
+      });
+    });
+    
+    const resultTemplate = `<div class="col-xs-12 col-sm-3 col-md-3 result_img" >
+            <img class="img-responsive result_img" src={{Image_Url}} alt="image not found" />
+        </div><div class="col-xs-12 col-sm-9 col-md-9"><h4>{{Title}} - <b>{{priceMoney}}</b></h4><div class="resultDescription">{{{Description}}}</div></div>`;
+
+    // add a results view using the template defined above
+    automagic.addResults("results", { count: true }, resultTemplate);
+    
+    // Adds a pager control << 1 2 3 ... >>
+    automagic.addPager("pager");
+    
+        automagic.addSearchBox("searchBox");
+        
+       automagic.addRangeFacet("PriceFacet", "Price", "number", 0, 10000000);
+   automagic.addRangeFacet("BedsFacet", "Beds", "number", 0, 10);
+   automagic.addRangeFacet("BathFacet", "Bath", "number", 0, 10);
+
+
+    // Adds a button to clear any applied filters
+    automagic.addClearFiltersButton("clearFilters");
+
+    // Current time: get time (HH:MM format), load into #time div, display as jQuery UI dialog
+    function getCurrentTime12h() {
+        var d = new Date();
+        var h = d.getHours();
+        var m = d.getMinutes();
+        var ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12 || 12;
+        var mm = m < 10 ? "0" + m : m;
+        return h + ":" + mm + " " + ampm;
+    }
+    $("#currentTimeBtn").on("click", function () {
+        var timeStr = getCurrentTime12h();
+        document.getElementById("time").textContent = timeStr;
+        if ($("#time").hasClass("ui-dialog-content")) {
+            $("#time").dialog("option", "position", { my: "center top", at: "center top+72", of: window });
+            $("#time").dialog("open");
+        } else {
+            $("#time").dialog({
+                modal: true,
+                title: "Current time",
+                closeOnEscape: true,
+                width: 320,
+                position: { my: "center top", at: "center top+72", of: window }
+            });
+        }
+    });
+
+    // --- Background image: show on first load, cycle on any click ---
+    var backgroundImages = [
+        "url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1600')",
+        "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600')",
+        "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600')",
+        "url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600')",
+        "url('https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1600')"
+    ];
+    var currentBgIndex = 0;
+    document.body.style.backgroundImage = backgroundImages[0];
+    function cycleBackgroundImage() {
+        currentBgIndex = (currentBgIndex + 1) % backgroundImages.length;
+        document.body.style.backgroundImage = backgroundImages[currentBgIndex];
+    }
+    $(document).on("click", function () { cycleBackgroundImage(); });
+    $("#brandLink").on("click", function (e) { e.preventDefault(); });
+
+    // --- I'm feeling lucky: one random result from Azure Search ---
+    $("#feelingLuckyBtn").on("click", function () {
+        var searchInput = document.querySelector("#searchBox input");
+        var query = (searchInput && searchInput.value && searchInput.value.trim()) ? searchInput.value.trim() : "*";
+        var url = "https://" + serviceName + "." + dnsSuffix + "/indexes/" + indexName + "/docs/search?api-version=2021-04-30-Preview";
+        fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "api-key": apiKey
+            },
+            body: JSON.stringify({ search: query, top: 50, count: true })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            var hits = (data.value && data.value.length) ? data.value : [];
+            if (hits.length === 0) {
+                document.getElementById("results").innerHTML = "<div class=\"col-xs-12\"><p class=\"text-muted\">No results to pick from. Try a different search.</p></div>";
+            } else {
+                var r = hits[Math.floor(Math.random() * hits.length)];
+                var n = Number(r.Price);
+                r.priceMoney = Number.isFinite(n) ? money.format(n) : "";
+                var img = (r.Image_Url || "").replace(/"/g, "&quot;");
+                var title = (r.Title || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                var desc = (r.Description || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                var html = "<div class=\"col-xs-12 searchResults__result\">" +
+                    "<div class=\"col-xs-12 col-sm-3 col-md-3 result_img\"><img class=\"img-responsive result_img\" src=\"" + img + "\" alt=\"Listing\" /></div>" +
+                    "<div class=\"col-xs-12 col-sm-9 col-md-9\"><h4>" + title + " - <b>" + (r.priceMoney || "") + "</b></h4><div class=\"resultDescription\">" + desc + "</div></div>" +
+                    "</div>";
+                document.getElementById("results").innerHTML = html;
+            }
+            document.getElementById("pager").innerHTML = "";
+        })
+        .catch(function () {
+            document.getElementById("results").innerHTML = "<div class=\"col-xs-12\"><p class=\"text-danger\">Could not load a random result. Try again.</p></div>";
+        });
+    });
+</script>
+</html>
